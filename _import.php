@@ -14,7 +14,9 @@ while (($line = fgetcsv($file)) !== FALSE) { $count++;
  var_dump($line);
  print('</pre>');
 */
-if($count==1){continue;}
+//define o começo dos dados
+if($count<=1){continue;}
+
 if (!empty($line[0]) && !empty($line[1])) {
  
 $data['email'] = $line[0];
@@ -71,36 +73,28 @@ function createCategory($data) {
  
 echo "Starting {$data['email']}...";
 
-        $customer = new Mage_Customer_Model_Customer();
-      //  $crypt = Mage::getModel('core/encryption');
-        
-      
-     //  $countryName = Mage::getModel('directory/country')->load('BR')->getName(); //get country name
-      // $states = Mage::getModel('directory/country')->load('BR')->getRegions();
-//state names
-        //$this->view->uf = $estados;
+
 			//Zend_Debug::dump($data);
 		
 		//exit;
-		// $estados = Mage::getModel('directory/country')->load('BR')->getRegions();
 	
-       // $this->view->uf = $states;
-       
-            //Recebe todos os parametros enviados pelo o POST
-           // $dados = $this->getRequest()->getParams();
-            //Recebe todos os dados do corretor selecionado
-         //   $dadosCorretor = $corretor->loadByCodSincom($dados['cod_sincom']);
             //Instancia o Customer do Magento
             $customer = new Mage_Customer_Model_Customer();
             
             // Instancia o endereço do customer
+
          //   $endereco = new Mage_Customer_Model_Address();
             
-            //Veririfa se o tipo de pessoa é jurídica
+            
 			
            
             //Salva o cliente no Magento
-            $customer->setData($data)->save();
+           
+			
+			
+			
+			try{
+    $customer->setData($data)->save();
             //Salva endereco do cliente
   $address = Mage::getModel("customer/address");
 $address->setCustomerId($customer->getId())
@@ -125,9 +119,19 @@ try{
 catch (Exception $e) {
     Zend_Debug::dump($e->getMessage());
 }
-                    echo " <br />Suceeded <hr /> "; 
+}
+catch (Exception $e) {
+	
+	$content = 'erro no email'.$data['email'].'->'.$e->getMessage()."\n\n\n";
+// armazenar todas as senhas em um arquivo:
+file_put_contents('./accountserror.log', $content);
+  
+}
 
-           // $this->_redirect('hotel/cliente/listar');
+
+                    echo " <br />Suceeded <hr />\n"; 
+
+           
         
  
  
