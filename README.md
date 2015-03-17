@@ -1,2 +1,3 @@
 # customer_import
-Forcar importatação de cliemtes no magento
+Codigo auto explicativo.
+Bom para csvs que insistem em dar error.
