@@ -9,16 +9,14 @@ $count = 0;
  
 $file = fopen('./var/import/customer_.csv', 'r');
 while (($line = fgetcsv($file)) !== FALSE) { $count++;
-//$line is an array ovaf the csv elements
-/*print('<pre>');
- var_dump($line);
- print('</pre>');
-*/
+//$line e um array com as informaçoes do cliente.
+
 //define o começo dos dados
 if($count<=1){continue;}
 
 if (!empty($line[0]) && !empty($line[1])) {
- 
+ //Facilitando 
+ //Cada elemento do array e uma coluna no csv
 $data['email'] = $line[0];
 $data['_website'] = $line[1];
 $data['confirmation'] = $line[2];
@@ -56,80 +54,65 @@ $data['_address_vat_id'] = $line[33];
 $data['_address_default_billing_'] = $line[34];
 $data['_address_default_shipping_'] = $line[35];
 
-$storeId = 0;
-  createCategory($data) ;
-//sleep(0.7);
 
-/*print('<pre>');
- var_dump($data);
- print('</pre>');
-*/
+  createCustomer($data) ;
+  
+sleep(0.5);
+
 unset($data);
 }
  
 }
  
-function createCategory($data) {
+function createCustomer($data) {
  
-echo "Starting {$data['email']}...";
+	echo "Starting {$data['email']}...\n";
 
-
-			//Zend_Debug::dump($data);
-		
-		//exit;
-	
             //Instancia o Customer do Magento
-            $customer = new Mage_Customer_Model_Customer();
-            
-            // Instancia o endereço do customer
-
-         //   $endereco = new Mage_Customer_Model_Address();
-            
-            
-			
-           
-            //Salva o cliente no Magento
-           
-			
-			
-			
-			try{
-    $customer->setData($data)->save();
-            //Salva endereco do cliente
-  $address = Mage::getModel("customer/address");
-$address->setCustomerId($customer->getId())
-        ->setFirstname($data['_address_firstname'])
-        ->setMiddleName($customer->getMiddlename())
-        ->setLastname($data['_address_lastname'])
-        ->setCountryId( $data['_address_country_id'])
+        $customer = new Mage_Customer_Model_Customer();
+	
+	try{
+    		$customer->setData($data)->save();
+    		
+	       $address = Mage::getModel("customer/address");
+		
+		$address->setCustomerId($customer->getId())
+        	->setFirstname($data['_address_firstname'])
+	        ->setMiddleName($customer->getMiddlename())
+        	->setLastname($data['_address_lastname'])
+        	->setCountryId( $data['_address_country_id'])
 		->setRegionId($data['_address_region']) //state/province, only needed if the country is USA
-        ->setPostcode($data['_address_postcode'])
-        ->setCity($data['_address_city'])
-        ->setTelephone($data['_address_telephone'])
-        ->setFax($data['_address_telephone'])
-        ->setCompany($data['_address_company'])
-        ->setStreet($data['_address_street'])
-        ->setIsDefaultBilling('1')
-        ->setIsDefaultShipping('1')
-        ->setSaveInAddressBook('1');
- 
-try{
-    $address->save();
-}
-catch (Exception $e) {
-    Zend_Debug::dump($e->getMessage());
-}
-}
-catch (Exception $e) {
+	        ->setPostcode($data['_address_postcode'])
+        	->setCity($data['_address_city'])
+	        ->setTelephone($data['_address_telephone'])
+        	->setFax($data['_address_telephone'])
+	        ->setCompany($data['_address_company'])
+        	->setStreet($data['_address_street'])
+	        ->setIsDefaultBilling('1')
+        	->setIsDefaultShipping('1')
+	        ->setSaveInAddressBook('1');
+ //Salva endereco do cliente
+
+  		try{
+			 $address->save();
+		}
+		catch (Exception $e) {
+			$content = 'erro no email'.$data['email'].'->'.$e->getMessage()."\n";
+			// armazenar todas as senhas em um arquivo:
+			file_put_contents('./accountserror.log', $content);
+		
+		}
+	}
+	catch (Exception $e) {
 	
 	$content = 'erro no email'.$data['email'].'->'.$e->getMessage()."\n\n\n";
-// armazenar todas as senhas em um arquivo:
-file_put_contents('./accountserror.log', $content);
+	// armazenar todas as senhas em um arquivo:
+	file_put_contents('./accountserror.log', $content);
   
 }
 
 
-                    echo " <br />Suceeded <hr />\n"; 
+                echo "\n Terminado \n"; 
 
            
         
